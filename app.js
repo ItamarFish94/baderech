@@ -7,8 +7,11 @@
     MIN_SAMPLES: 3,          // smoothing minimum before movement is measured
     SMOOTH_WINDOW: 3,        // samples averaged per smoothed point
     MOVE_M: 40,              // net smoothed movement that earns VERIFIED, at any moment
-    DECISION_MS: 60000,      // the full minute the authority waits before rejecting
-    DEMO_DECISION_MS: 8000,  // compressed window for demo mode
+    DECISION_MS: 60000,      // the full minute: under 40m by then is a rejection
+    EARLY_MS: 10000,         // early check: no movement at all by now is an instant rejection
+    EARLY_MIN_M: 5,          // "no movement" means less than this (above GPS jitter)
+    DEMO_DECISION_MS: 8000,  // compressed windows for demo mode
+    DEMO_EARLY_MS: 4000,
     MAX_ACCURACY_M: 50       // GPS samples with worse accuracy are ignored
   };
 
@@ -21,12 +24,15 @@
     baseline: null,
     movedM: 0,
     startedAt: 0,
+    firstSampleAt: 0,
+    earlyPassed: false,
     watchId: null,
     tickTimer: null,
     demoTimer: null
   };
 
   function decisionMs() { return DEMO ? CONFIG.DEMO_DECISION_MS : CONFIG.DECISION_MS; }
+  function earlyMs() { return DEMO ? CONFIG.DEMO_EARLY_MS : CONFIG.EARLY_MS; }
 
   function $(id) { return document.getElementById(id); }
 
@@ -94,6 +100,7 @@
   function acceptSample(lat, lon, accuracy) {
     if (state.phase !== "VERIFYING") return;
     if (typeof accuracy === "number" && accuracy > CONFIG.MAX_ACCURACY_M) return;
+    if (!state.firstSampleAt) state.firstSampleAt = Date.now();
     state.samples.push({ lat: lat, lon: lon });
 
     var sm = smoothed();
@@ -113,12 +120,17 @@
     if (state.movedM >= CONFIG.MOVE_M) return verdict("VERIFIED");
   }
 
-  // the clock decides the rejection, not the sample count: a full minute, then verdict
+  // the clock decides the rejection, internally, nothing shown:
+  // no movement by the early mark = instant rejection; under 40m when the minute ends = rejection
   function tick() {
     if (state.phase !== "VERIFYING") return;
-    var left = Math.max(0, decisionMs() - (Date.now() - state.startedAt));
-    $("t-time").textContent = String(Math.ceil(left / 1000));
-    if (left <= 0) {
+    if (!state.firstSampleAt) return; // the clock starts at the first real measurement, not the tap
+    var elapsed = Date.now() - state.firstSampleAt;
+    if (!state.earlyPassed && elapsed >= earlyMs()) {
+      if (state.movedM < CONFIG.EARLY_MIN_M) return verdict("BLOCKED_STILL");
+      state.earlyPassed = true;
+    }
+    if (elapsed >= decisionMs()) {
       if (state.movedM >= CONFIG.MOVE_M) return verdict("VERIFIED");
       return verdict("BLOCKED_STILL");
     }
@@ -178,6 +190,8 @@
     state.samples = [];
     state.baseline = null;
     state.movedM = 0;
+    state.firstSampleAt = 0;
+    state.earlyPassed = false;
   }
 
   function beginVerifying() {
@@ -186,7 +200,6 @@
     state.startedAt = Date.now();
     show("screen-verifying");
     updateTelemetry();
-    $("t-time").textContent = String(Math.ceil(decisionMs() / 1000));
     state.tickTimer = setInterval(tick, 250);
     startWatching();
   }
