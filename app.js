@@ -4,11 +4,11 @@
   "use strict";
 
   var CONFIG = {
-    MIN_SAMPLES: 3,          // no verdict before this many samples
+    MIN_SAMPLES: 3,          // smoothing minimum before movement is measured
     SMOOTH_WINDOW: 3,        // samples averaged per smoothed point
-    STILL_LIMIT_M: 25,       // less net movement than this counts as couch
-    STILL_AFTER_SAMPLES: 6,  // how many samples of stillness before rejection
-    MOVE_M: 40,              // net smoothed movement that earns VERIFIED
+    MOVE_M: 40,              // net smoothed movement that earns VERIFIED, at any moment
+    DECISION_MS: 60000,      // the full minute the authority waits before rejecting
+    DEMO_DECISION_MS: 8000,  // compressed window for demo mode
     MAX_ACCURACY_M: 50       // GPS samples with worse accuracy are ignored
   };
 
@@ -20,9 +20,13 @@
     samples: [],
     baseline: null,
     movedM: 0,
+    startedAt: 0,
     watchId: null,
+    tickTimer: null,
     demoTimer: null
   };
+
+  function decisionMs() { return DEMO ? CONFIG.DEMO_DECISION_MS : CONFIG.DECISION_MS; }
 
   function $(id) { return document.getElementById(id); }
 
@@ -107,7 +111,15 @@
     updateTelemetry();
 
     if (state.movedM >= CONFIG.MOVE_M) return verdict("VERIFIED");
-    if (state.samples.length >= CONFIG.STILL_AFTER_SAMPLES && state.movedM < CONFIG.STILL_LIMIT_M) {
+  }
+
+  // the clock decides the rejection, not the sample count: a full minute, then verdict
+  function tick() {
+    if (state.phase !== "VERIFYING") return;
+    var left = Math.max(0, decisionMs() - (Date.now() - state.startedAt));
+    $("t-time").textContent = String(Math.ceil(left / 1000));
+    if (left <= 0) {
+      if (state.movedM >= CONFIG.MOVE_M) return verdict("VERIFIED");
       return verdict("BLOCKED_STILL");
     }
   }
@@ -158,6 +170,7 @@
       navigator.geolocation.clearWatch(state.watchId);
       state.watchId = null;
     }
+    if (state.tickTimer) { clearInterval(state.tickTimer); state.tickTimer = null; }
     stopDemoFeed();
   }
 
@@ -170,8 +183,11 @@
   function beginVerifying() {
     resetEngine();
     state.phase = "VERIFYING";
+    state.startedAt = Date.now();
     show("screen-verifying");
     updateTelemetry();
+    $("t-time").textContent = String(Math.ceil(decisionMs() / 1000));
+    state.tickTimer = setInterval(tick, 250);
     startWatching();
   }
 
