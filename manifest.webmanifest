@@ -1,0 +1,14 @@
+{
+  "name": "בדרך®",
+  "short_name": "בדרך",
+  "description": "הרשות הלאומית לאימות ״אני בדרך״",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F7F6F2",
+  "theme_color": "#1B3C8C",
+  "icons": [
+    { "src": "icon.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any" }
+  ]
+}

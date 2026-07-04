@@ -1,0 +1,232 @@
+/* BaDerech: national verification authority look. Paper, ink, one blue, stamp red, stamp green. Square corners only. */
+
+:root {
+  --paper: #F7F6F2;
+  --ink: #1A1A1A;
+  --authority: #1B3C8C;
+  --stamp-red: #C0392B;
+  --stamp-green: #1E7B4F;
+  --mono: "Menlo", "Consolas", "Courier New", monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+[hidden] { display: none !important; }
+
+html, body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Heebo", "Arial Hebrew", Arial, sans-serif;
+  font-weight: 400;
+  direction: rtl;
+}
+
+body { min-height: 100vh; display: flex; flex-direction: column; }
+
+.band {
+  background: var(--authority);
+  color: #fff;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.band .seal { width: 54px; height: 54px; flex: none; }
+
+.brand-name {
+  font-weight: 900;
+  font-size: 30px;
+  line-height: 1;
+}
+
+.brand-name sup { font-size: 14px; font-weight: 400; }
+
+.brand-sub { font-size: 13px; opacity: 0.92; margin-top: 4px; }
+
+main { flex: 1; width: 100%; max-width: 560px; margin: 0 auto; padding: 22px 18px 40px; }
+
+.jurisdiction {
+  font-size: 16px;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+}
+
+.pitch { font-size: 16px; line-height: 1.7; margin-bottom: 22px; }
+
+.form-block {
+  border: 1px solid var(--ink);
+  background: #fff;
+  padding: 16px;
+  position: relative;
+}
+
+.form-block .btn { margin-top: 0; }
+
+.btn {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  background: var(--authority);
+  color: #fff;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 900;
+  padding: 13px 16px;
+  margin-top: 14px;
+  cursor: pointer;
+  -webkit-appearance: none;
+}
+
+.btn:active { transform: translateY(1px); }
+
+.btn.secondary {
+  background: #fff;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  font-weight: 400;
+}
+
+.regulation {
+  font-size: 12px;
+  line-height: 1.6;
+  margin-top: 12px;
+  color: #444;
+}
+
+.status-line { font-family: var(--mono); font-size: 13px; margin-top: 14px; min-height: 18px; }
+
+.screen { display: none; }
+.screen.active { display: block; }
+
+.telemetry {
+  border: 1px solid var(--ink);
+  background: #fff;
+  margin-top: 18px;
+}
+
+.telemetry .row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--ink);
+  font-size: 14px;
+}
+
+.telemetry .row:last-child { border-bottom: 0; }
+
+.telemetry .val { font-family: var(--mono); font-size: 15px; }
+
+.verdict {
+  font-weight: 900;
+  font-size: 13vw;
+  line-height: 1.05;
+  margin: 30px 0 18px;
+  word-break: keep-all;
+}
+
+@media (min-width: 560px) { .verdict { font-size: 64px; } }
+
+.evidence { font-family: var(--mono); font-size: 15px; margin-bottom: 6px; }
+
+.official-line { font-size: 16px; margin-bottom: 22px; }
+
+.stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 3px solid var(--stamp-red);
+  color: var(--stamp-red);
+  font-weight: 900;
+  font-size: 26px;
+  padding: 8px 18px;
+  transform: rotate(-7deg);
+  margin: 8px 0 18px;
+  user-select: none;
+}
+
+.stamp .seal { width: 34px; height: 34px; }
+
+.stamp.green { border-color: var(--stamp-green); color: var(--stamp-green); transform: rotate(-5deg); }
+
+.msg-doc {
+  border: 1px solid var(--ink);
+  background: #fff;
+  padding: 14px 16px;
+  font-size: 15px;
+  line-height: 1.8;
+  margin: 14px 0;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.demo-bar {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background: var(--ink);
+  color: #fff;
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  z-index: 50;
+}
+
+.demo-bar button {
+  flex: 1;
+  font: inherit;
+  font-size: 12px;
+  background: #fff;
+  color: var(--ink);
+  border: 0;
+  border-radius: 0;
+  padding: 8px 4px;
+  cursor: pointer;
+}
+
+body.demo { padding-bottom: 52px; }
+
+/* certificate */
+
+.cert {
+  border: 4px double var(--ink);
+  background: #fff;
+  max-width: 560px;
+  margin: 26px auto;
+  padding: 26px 22px;
+  position: relative;
+}
+
+.cert .seal { width: 72px; height: 72px; display: block; margin: 0 auto 8px; }
+
+.cert h1 { font-size: 24px; font-weight: 900; text-align: center; margin-bottom: 4px; }
+
+.cert .authority-line { text-align: center; font-size: 13px; margin-bottom: 22px; }
+
+.cert .serial {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  font-family: var(--mono);
+  font-size: 12px;
+  direction: ltr;
+}
+
+.cert .field { margin-bottom: 14px; }
+
+.cert .field .flabel { font-size: 12px; color: #555; }
+
+.cert .field .fvalue {
+  font-size: 17px;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 4px;
+}
+
+.cert .field .fvalue.mono { font-family: var(--mono); font-size: 15px; }
+
+.cert .stamp { position: static; margin-top: 20px; }
+
+.cert .fine { font-size: 11px; color: #555; line-height: 1.6; margin-top: 24px; }

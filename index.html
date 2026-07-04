@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>בדרך® : הרשות הלאומית לאימות ״אני בדרך״</title>
+<meta name="description" content="בדרך® מאפשרת לשלוח ״אני בדרך״ רק אם אתה באמת בדרך.">
+<meta name="theme-color" content="#1B3C8C">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="seal" viewBox="0 0 100 100">
+<circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" stroke-width="3"/>
+<circle cx="50" cy="50" r="36" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<path id="sealArc" d="M 50 50 m -41 0 a 41 41 0 1 1 82 0 a 41 41 0 1 1 -82 0" fill="none"/>
+<text font-size="8.5" fill="currentColor" letter-spacing="1">
+<textPath href="#sealArc">הרשות הלאומית לאימות · אני בדרך · בדרך</textPath>
+</text>
+<g transform="translate(50 50) scale(0.62) translate(-46 -50)">
+<path fill="currentColor" fill-rule="evenodd" d="M48 13 C35.5 13 26 22.5 26 35 C26 44 30.5 50.5 37 56 L47.5 64.5 L56 80 L55 87 L70.5 85.5 L64 71 C61.5 63 61.5 58 62.5 53 C67.5 48.5 70 42.5 70 35 C70 22.5 60.5 13 48 13 Z M58 35 A10 10 0 1 1 38 35 A10 10 0 1 1 58 35 Z"/>
+<path fill="currentColor" d="M42.5 56 L49 64.5 L41.5 76.5 L40.5 85.5 L23.5 86 Q21.5 86 21.5 83.5 L22 78.5 L36.5 72.8 Z"/>
+</g>
+</symbol>
+</svg>
+
+<header class="band">
+<svg class="seal" aria-hidden="true"><use href="#seal" style="color:#fff"/></svg>
+<div>
+<div class="brand-name">בדרך<sup>®</sup></div>
+<div class="brand-sub">הרשות הלאומית לאימות ״אני בדרך״</div>
+</div>
+</header>
+
+<main>
+
+<section id="screen-idle" class="screen active">
+<p class="jurisdiction">כמה פעמים שלחת ״אני בדרך״ מהספה? מהיום זה נגמר.</p>
+<div class="pitch">
+בדרך® מנפיקה אישור רשמי מבוסס GPS שאת.ה בדרך - אבל רק אם את.ה באמת בדרך!
+</div>
+<form class="form-block" id="request-form">
+<button type="submit" class="btn">התחל אימות</button>
+<p class="regulation">תקנה 4(א): האימות מתבצע כשהמסך דלוק והעמוד פתוח בלבד. גם אנחנו לא סומכים עליך.</p>
+</form>
+</section>
+
+<section id="screen-verifying" class="screen">
+<p class="jurisdiction" id="verifying-title">במדידה... יש להמשיך לזוז.</p>
+<div class="telemetry">
+<div class="row"><span>דגימות שנאספו</span><span class="val" id="t-samples">0</span></div>
+<div class="row"><span>תזוזה שנמדדה</span><span class="val"><span id="t-moved">0</span> מטרים</span></div>
+</div>
+<p class="status-line" id="verify-status">ממתין לדגימות מיקום...</p>
+</section>
+
+<section id="screen-blocked" class="screen">
+<div class="stamp"><svg class="seal" aria-hidden="true"><use href="#seal"/></svg>נדחה</div>
+<h1 class="verdict">את.ה על הספה!</h1>
+<p class="evidence" id="blocked-evidence"></p>
+<p class="official-line">הבקשה נדחתה. מקווים שלא נשבעת באמא.</p>
+<button class="btn" id="btn-retry">ננסה שוב?</button>
+</section>
+
+<section id="screen-verified" class="screen">
+<div class="stamp green"><svg class="seal" aria-hidden="true"><use href="#seal"/></svg>אומת</div>
+<h1 class="verdict">את.ה באמת בדרך!</h1>
+<div class="msg-doc" id="verified-msg"></div>
+<button class="btn" id="btn-share-verified">שלח בוואטסאפ</button>
+<button class="btn secondary" id="btn-again">אימות חדש</button>
+</section>
+
+<section id="screen-desktop" class="screen">
+<h1 class="verdict">האימות מתבצע ברגליים.</h1>
+<p class="official-line">תפתח מהטלפון.</p>
+</section>
+
+</main>
+
+<div class="demo-bar" id="demo-bar" hidden>
+<button data-demo="still">דמו: עמידה</button>
+<button data-demo="move">דמו: בתנועה</button>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
