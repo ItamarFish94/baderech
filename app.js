@@ -12,11 +12,21 @@
     EARLY_MIN_M: 5,          // "no movement" means less than this (above GPS jitter)
     DEMO_DECISION_MS: 8000,  // compressed windows for demo mode
     DEMO_EARLY_MS: 4000,
-    MAX_ACCURACY_M: 50       // GPS samples with worse accuracy are ignored
+    MAX_ACCURACY_M: 30,      // GPS samples with worse accuracy are ignored
+    BASELINE_ACCURACY_M: 20, // the baseline waits for a fix at least this tight
+    WARMUP_MAX_MS: 10000,    // past this wait, weak GPS may anchor with any accepted fix
+    MAX_SPEED_MPS: 40        // a jump implying more than this is a GPS glitch, not movement
   };
 
   var params = new URLSearchParams(location.search);
   var DEMO = params.get("demo") === "1";
+
+  // in-app browsers (WhatsApp, Instagram, Facebook...) often block the location
+  // prompt entirely; detect them so the user is routed to a real browser
+  var UA = navigator.userAgent || "";
+  var IN_APP = /FBAN|FBAV|FB_IAB|Instagram|WhatsApp|Snapchat|TikTok|Line\//i.test(UA) ||
+    (/Android/i.test(UA) && /; wv\)/i.test(UA)) ||
+    (/iPhone|iPad|iPod/.test(UA) && !/Safari\//.test(UA) && !/CriOS|FxiOS|EdgiOS/.test(UA));
 
   var state = {
     phase: "IDLE",
@@ -25,6 +35,8 @@
     movedM: 0,
     startedAt: 0,
     firstSampleAt: 0,
+    warmupStart: 0,
+    lastRaw: null,
     earlyPassed: false,
     watchId: null,
     tickTimer: null,
@@ -99,8 +111,30 @@
 
   function acceptSample(lat, lon, accuracy) {
     if (state.phase !== "VERIFYING") return;
+    var now = Date.now();
+    if (!state.warmupStart) state.warmupStart = now;
     if (typeof accuracy === "number" && accuracy > CONFIG.MAX_ACCURACY_M) return;
-    if (!state.firstSampleAt) state.firstSampleAt = Date.now();
+
+    // warm-up: the first fixes after GPS wakes are the noisiest; don't anchor
+    // the baseline on them unless the wait runs long (weak-GPS fallback)
+    if (!state.baseline &&
+        typeof accuracy === "number" &&
+        accuracy > CONFIG.BASELINE_ACCURACY_M &&
+        now - state.warmupStart < CONFIG.WARMUP_MAX_MS) {
+      $("verify-status").textContent = "ממתין לאיתות GPS יציב...";
+      return;
+    }
+
+    // teleport filter: a jump between fixes that implies impossible speed is
+    // multipath noise, not movement; drop it and wait for the next fix
+    if (state.lastRaw) {
+      var dt = (now - state.lastRaw.t) / 1000;
+      if (dt > 0 &&
+          haversineM(state.lastRaw, { lat: lat, lon: lon }) / dt > CONFIG.MAX_SPEED_MPS) return;
+    }
+    state.lastRaw = { lat: lat, lon: lon, t: now };
+
+    if (!state.firstSampleAt) state.firstSampleAt = now;
     state.samples.push({ lat: lat, lon: lon });
 
     var sm = smoothed();
@@ -172,8 +206,19 @@
     }
     state.watchId = navigator.geolocation.watchPosition(function (pos) {
       acceptSample(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
-    }, function () {
-      $("verify-status").textContent = "אין הרשאת מיקום. בלי מיקום אין אימות.";
+    }, function (err) {
+      var code = err && err.code;
+      var msg;
+      if (code === 1) {
+        msg = IN_APP
+          ? "הדפדפן שבתוך האפליקציה חוסם מיקום. יש לפתוח את הקישור בדפדפן רגיל (תפריט שלוש הנקודות, ״פתיחה בדפדפן״)."
+          : "אין הרשאת מיקום. בלי מיקום אין אימות.";
+      } else if (code === 3) {
+        msg = "איתור המיקום מתארך. עדיף תחת שמיים פתוחים.";
+      } else {
+        msg = "אין קליטת מיקום כרגע. בתוך מבנה זה קורה, בחוץ זה עובר.";
+      }
+      $("verify-status").textContent = msg;
     }, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 });
   }
 
@@ -191,6 +236,8 @@
     state.baseline = null;
     state.movedM = 0;
     state.firstSampleAt = 0;
+    state.warmupStart = 0;
+    state.lastRaw = null;
     state.earlyPassed = false;
   }
 
@@ -255,6 +302,8 @@
       if (mode === "move") demoFeed("move");
     });
   }
+
+  if (!DEMO && IN_APP) $("inapp-notice").hidden = false;
 
   // verification happens on foot: desktop without touch gets the gate screen (demo bypasses)
   var IS_TOUCH = ("ontouchstart" in window) || navigator.maxTouchPoints > 0;
