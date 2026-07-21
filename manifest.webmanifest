@@ -1,7 +1,7 @@
 {
-  "name": "בדרך®",
-  "short_name": "בדרך",
-  "description": "הרשות הלאומית לאימות ״אני בדרך״",
+  "name": "ה״בדרךייטור״",
+  "short_name": "בדרךייטור",
+  "description": "אם קיבלת את הקישור, כנראה שאין לך מילה.",
   "lang": "he",
   "dir": "rtl",
   "start_url": "./index.html",

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>בדרך® : הרשות הלאומית לאימות ״אני בדרך״</title>
-<meta name="description" content="בדרך® מאפשרת לשלוח ״אני בדרך״ רק אם אתה באמת בדרך.">
+<title>ה״בדרךייטור״ של דומינוס</title>
+<meta name="description" content="אם קיבלת את הקישור, כנראה שאין לך מילה.">
 <meta name="theme-color" content="#0B0B0D">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.png" type="image/png">
@@ -32,15 +32,14 @@
 
 <header class="band">
 <img class="logo" src="logo.png" alt="בדרךייטור">
-<div class="brand-sub">הרשות הלאומית לאימות ״אני בדרך״</div>
 </header>
 
 <main>
 
 <section id="screen-idle" class="screen active">
-<p class="jurisdiction">כמה פעמים שלחת ״אני בדרך״ מהספה? מהיום זה נגמר.</p>
+<p class="jurisdiction">אם שלחו לך את הלינק הזה,<br>וואלה כנראה שאין לך מילה.</p>
 <div class="pitch">
-בדרך® מנפיקה אישור רשמי מבוסס GPS שאת.ה בדרך - אבל רק אם את.ה באמת בדרך!
+כמה פעמים שלחת ״אני בדרך״ מהספה? מהיום זה נגמר.<br>ה״בדרךייטור״ מנפיקה אישור רשמי שאת.ה בדרך - אבל רק אם את.ה באמת בדרך.
 </div>
 <form class="form-block" id="request-form">
 <button type="submit" class="btn">התחל אימות</button>
@@ -50,7 +49,7 @@
 </section>
 
 <section id="screen-verifying" class="screen">
-<p class="jurisdiction" id="verifying-title">במדידה... יש להמשיך לזוז.</p>
+<p class="jurisdiction" id="verifying-title">יאללה להמשיך לזוז</p>
 <div class="telemetry">
 <div class="track-row"><div class="track"><div class="track-fill" id="t-track"></div></div></div>
 <div class="row"><span>דגימות שנאספו</span><span class="val" id="t-samples">0</span></div>
@@ -61,22 +60,22 @@
 
 <section id="screen-blocked" class="screen">
 <div class="stamp"><svg class="seal" aria-hidden="true"><use href="#seal"/></svg>נדחה</div>
-<h1 class="verdict">את.ה על הספה!</h1>
+<h1 class="verdict">וואלק אין לך מילה.</h1>
 <p class="evidence" id="blocked-evidence"></p>
-<p class="official-line">הבקשה נדחתה. מקווים שלא נשבעת באמא.</p>
+<p class="official-line">את.ה עדיין על הספה. מקווים שלא נשבעת באמא.</p>
 <button class="btn" id="btn-retry">ננסה שוב?</button>
 </section>
 
 <section id="screen-verified" class="screen">
 <div class="stamp green"><svg class="seal" aria-hidden="true"><use href="#seal"/></svg>אומת</div>
-<h1 class="verdict">את.ה באמת בדרך!</h1>
+<h1 class="verdict">אשכרה בדרך</h1>
 <div class="msg-doc" id="verified-msg"></div>
 <button class="btn" id="btn-share-verified">שלח בוואטסאפ</button>
 <button class="btn secondary" id="btn-again">אימות חדש</button>
 </section>
 
 <section id="screen-desktop" class="screen">
-<h1 class="verdict">האימות מתבצע ברגליים.</h1>
+<h1 class="verdict">חחח מי הולך עם הלפטופ?</h1>
 <p class="official-line">תפתח מהטלפון.</p>
 </section>
 
@@ -87,6 +86,6 @@
 <button data-demo="move">דמו: בתנועה</button>
 </div>
 
-<script src="app.js?v=3"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>

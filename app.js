@@ -108,7 +108,7 @@
   }
 
   function verifiedMessage(certUrl) {
-    return "בדרך®, הרשות הלאומית לאימות ״אני בדרך״, מאשרת: " +
+    return "ה״בדרךייטור״ מאשר: " +
       Math.round(state.movedM) + " מטרים של תזוזה מאומתת.\n" +
       "תעודה רשמית: " + certUrl;
   }
