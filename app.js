@@ -5,17 +5,18 @@
 
   var CONFIG = {
     MIN_SAMPLES: 3,          // smoothing minimum before movement is measured
-    SMOOTH_WINDOW: 3,        // samples averaged per smoothed point
+    SMOOTH_WINDOW: 5,        // samples per smoothed point (component-wise median)
     MOVE_M: 25,              // net smoothed movement that earns VERIFIED, at any moment
     DECISION_MS: 60000,      // the full minute: under 25m by then is a rejection
     EARLY_MS: 10000,         // early check: no movement at all by now is an instant rejection
     EARLY_MIN_M: 5,          // "no movement" means less than this (above GPS jitter)
     DEMO_DECISION_MS: 8000,  // compressed windows for demo mode
     DEMO_EARLY_MS: 4000,
-    MAX_ACCURACY_M: 30,      // GPS samples with worse accuracy are ignored
+    MAX_ACCURACY_M: 25,      // GPS samples with worse accuracy are ignored; kept under MOVE_M so no single fix can fabricate a verification
     BASELINE_ACCURACY_M: 20, // the baseline waits for a fix at least this tight
     WARMUP_MAX_MS: 10000,    // past this wait, weak GPS may anchor with any accepted fix
-    MAX_SPEED_MPS: 40        // a jump implying more than this is a GPS glitch, not movement
+    MAX_SPEED_MPS: 40,       // a jump implying more than this is a GPS glitch, not movement
+    MIN_SPEED_MPS: 0.5       // below this Doppler speed the chip says "standing"; such fixes run the clock but never the meter
   };
 
   var params = new URLSearchParams(location.search);
@@ -38,6 +39,7 @@
     warmupStart: 0,
     lastRaw: null,
     earlyPassed: false,
+    chipMoving: null,        // last Doppler verdict: true = chip says moving, false = chip says standing, null = chip silent
     watchId: null,
     tickTimer: null,
     demoTimer: null
@@ -66,15 +68,23 @@
     return 2 * R * Math.asin(Math.sqrt(h));
   }
 
+  function median(values) {
+    var s = values.slice().sort(function (a, b) { return a - b; });
+    var mid = Math.floor(s.length / 2);
+    return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
+  }
+
+  // median, not mean: a mean chases an outlier or a slow drift excursion,
+  // a median ignores it until the majority of the window has really moved
   function smoothed() {
     var n = Math.min(CONFIG.SMOOTH_WINDOW, state.samples.length);
     if (n === 0) return null;
-    var lat = 0, lon = 0;
+    var lats = [], lons = [];
     for (var i = state.samples.length - n; i < state.samples.length; i++) {
-      lat += state.samples[i].lat;
-      lon += state.samples[i].lon;
+      lats.push(state.samples[i].lat);
+      lons.push(state.samples[i].lon);
     }
-    return { lat: lat / n, lon: lon / n };
+    return { lat: median(lats), lon: median(lons) };
   }
 
   /* certificate link: snapshot encoded in the URL, zero backend */
@@ -109,7 +119,7 @@
 
   /* engine */
 
-  function acceptSample(lat, lon, accuracy) {
+  function acceptSample(lat, lon, accuracy, speed) {
     if (state.phase !== "VERIFYING") return;
     var now = Date.now();
     if (!state.warmupStart) state.warmupStart = now;
@@ -123,6 +133,20 @@
         now - state.warmupStart < CONFIG.WARMUP_MAX_MS) {
       $("verify-status").textContent = "ממתין לאיתות GPS יציב...";
       return;
+    }
+
+    // stillness gate: Doppler speed comes from the chip independently of the
+    // position fix. When the chip itself says "standing", the fix must not feed
+    // the meter — indoor multipath wanders at walking pace and would otherwise
+    // count as movement. The clock still runs so the couch fast-fails at 10s.
+    // No speed reported (null/NaN) = unknown = accepted as before.
+    if (typeof speed === "number" && isFinite(speed) && speed >= 0) {
+      state.chipMoving = speed >= CONFIG.MIN_SPEED_MPS;
+      if (!state.chipMoving) {
+        if (!state.firstSampleAt) state.firstSampleAt = now;
+        updateTelemetry();
+        return;
+      }
     }
 
     // teleport filter: a jump between fixes that implies impossible speed is
@@ -161,7 +185,10 @@
     if (!state.firstSampleAt) return; // the clock starts at the first real measurement, not the tap
     var elapsed = Date.now() - state.firstSampleAt;
     if (!state.earlyPassed && elapsed >= earlyMs()) {
-      if (state.movedM < CONFIG.EARLY_MIN_M) return verdict("BLOCKED_STILL");
+      // slow-walker grace: the median lags a couple of seconds, so a genuinely
+      // slow starter can sit under the early bar while the chip says "moving";
+      // only a chip that agrees it's standing (or stays silent) fast-fails here
+      if (state.movedM < CONFIG.EARLY_MIN_M && state.chipMoving !== true) return verdict("BLOCKED_STILL");
       state.earlyPassed = true;
     }
     if (elapsed >= decisionMs()) {
@@ -207,7 +234,7 @@
       return;
     }
     state.watchId = navigator.geolocation.watchPosition(function (pos) {
-      acceptSample(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
+      acceptSample(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy, pos.coords.speed);
     }, function (err) {
       var code = err && err.code;
       var msg;
@@ -241,6 +268,7 @@
     state.warmupStart = 0;
     state.lastRaw = null;
     state.earlyPassed = false;
+    state.chipMoving = null;
   }
 
   function beginVerifying() {
