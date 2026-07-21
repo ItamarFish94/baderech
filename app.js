@@ -173,6 +173,8 @@
   function updateTelemetry() {
     $("t-samples").textContent = String(state.samples.length);
     $("t-moved").textContent = String(Math.round(state.movedM));
+    var fill = $("t-track");
+    if (fill) fill.style.width = Math.min(100, (state.movedM / CONFIG.MOVE_M) * 100) + "%";
     if (state.samples.length < CONFIG.MIN_SAMPLES) {
       $("verify-status").textContent = "ממתין לדגימות מיקום... (" +
         state.samples.length + "/" + CONFIG.MIN_SAMPLES + ")";

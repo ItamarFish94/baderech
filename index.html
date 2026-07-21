@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>בדרך® : הרשות הלאומית לאימות ״אני בדרך״</title>
 <meta name="description" content="בדרך® מאפשרת לשלוח ״אני בדרך״ רק אם אתה באמת בדרך.">
-<meta name="theme-color" content="#1B3C8C">
+<meta name="theme-color" content="#0B0B0D">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.png" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
 
@@ -31,11 +31,8 @@
 </svg>
 
 <header class="band">
-<svg class="seal" aria-hidden="true"><use href="#seal" style="color:#fff"/></svg>
-<div>
-<div class="brand-name">בדרך<sup>®</sup></div>
+<img class="logo" src="logo.png" alt="בדרךייטור">
 <div class="brand-sub">הרשות הלאומית לאימות ״אני בדרך״</div>
-</div>
 </header>
 
 <main>
@@ -55,6 +52,7 @@
 <section id="screen-verifying" class="screen">
 <p class="jurisdiction" id="verifying-title">במדידה... יש להמשיך לזוז.</p>
 <div class="telemetry">
+<div class="track-row"><div class="track"><div class="track-fill" id="t-track"></div></div></div>
 <div class="row"><span>דגימות שנאספו</span><span class="val" id="t-samples">0</span></div>
 <div class="row"><span>תזוזה שנמדדה</span><span class="val"><span id="t-moved">0</span> מטרים</span></div>
 </div>
@@ -89,6 +87,6 @@
 <button data-demo="move">דמו: בתנועה</button>
 </div>
 
-<script src="app.js"></script>
+<script src="app.js?v=2"></script>
 </body>
 </html>
