@@ -6,8 +6,8 @@
   var CONFIG = {
     MIN_SAMPLES: 3,          // smoothing minimum before movement is measured
     SMOOTH_WINDOW: 3,        // samples averaged per smoothed point
-    MOVE_M: 40,              // net smoothed movement that earns VERIFIED, at any moment
-    DECISION_MS: 60000,      // the full minute: under 40m by then is a rejection
+    MOVE_M: 25,              // net smoothed movement that earns VERIFIED, at any moment
+    DECISION_MS: 60000,      // the full minute: under 25m by then is a rejection
     EARLY_MS: 10000,         // early check: no movement at all by now is an instant rejection
     EARLY_MIN_M: 5,          // "no movement" means less than this (above GPS jitter)
     DEMO_DECISION_MS: 8000,  // compressed windows for demo mode
@@ -155,7 +155,7 @@
   }
 
   // the clock decides the rejection, internally, nothing shown:
-  // no movement by the early mark = instant rejection; under 40m when the minute ends = rejection
+  // no movement by the early mark = instant rejection; under 25m when the minute ends = rejection
   function tick() {
     if (state.phase !== "VERIFYING") return;
     if (!state.firstSampleAt) return; // the clock starts at the first real measurement, not the tap
