@@ -40,6 +40,7 @@
     lastRaw: null,
     earlyPassed: false,
     chipMoving: null,        // last Doppler verdict: true = chip says moving, false = chip says standing, null = chip silent
+    lastAccuracy: null,      // latest reported fix accuracy, gates ignored — feeds the live signal row only
     watchId: null,
     tickTimer: null,
     demoTimer: null
@@ -128,7 +129,22 @@
     if (state.phase !== "VERIFYING") return;
     var now = Date.now();
     if (!state.warmupStart) state.warmupStart = now;
-    if (typeof accuracy === "number" && accuracy > CONFIG.MAX_ACCURACY_M) return;
+
+    // live signal readout: every arriving fix updates the accuracy row, even
+    // fixes the gates reject — indoors the user still sees the instrument work
+    if (typeof accuracy === "number" && isFinite(accuracy)) {
+      state.lastAccuracy = accuracy;
+      var acc = $("t-acc");
+      if (acc) acc.textContent = Math.round(accuracy) + " מ׳";
+    }
+
+    if (typeof accuracy === "number" && accuracy > CONFIG.MAX_ACCURACY_M) {
+      // nothing usable collected yet: say honestly why the meter is idle
+      if (state.samples.length === 0 && !state.baseline) {
+        $("verify-status").textContent = "אין קליטת מיקום כרגע. בתוך מבנה זה קורה, בחוץ זה עובר.";
+      }
+      return;
+    }
 
     // warm-up: the first fixes after GPS wakes are the noisiest; don't anchor
     // the baseline on them unless the wait runs long (weak-GPS fallback)
@@ -273,6 +289,9 @@
     state.lastRaw = null;
     state.earlyPassed = false;
     state.chipMoving = null;
+    state.lastAccuracy = null;
+    var acc = $("t-acc");
+    if (acc) acc.textContent = "--";
   }
 
   function beginVerifying() {
