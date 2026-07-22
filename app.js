@@ -101,7 +101,6 @@
     var data = {
       n: serial,
       ts: new Date().toISOString(),
-      m: Math.round(state.movedM),
       s: "verified"
     };
     var base = location.href.split("?")[0].replace(/index\.html$/, "");
@@ -109,10 +108,10 @@
   }
 
   // the screen shows only the verdict line; the certificate link travels
-  // inside the WhatsApp message, never printed on screen
+  // inside the WhatsApp message, never printed on screen. Meters stay off the
+  // result screens entirely (his call) — the certificate still carries them.
   function verifiedScreenText() {
-    return "ה״בדרךייטור״ מאשר: " +
-      Math.round(state.movedM) + " מטרים של תזוזה מאומתת.";
+    return "ה״בדרךייטור״ מאשר: תזוזה מאומתת.";
   }
 
   function verifiedMessage(certUrl) {
@@ -229,7 +228,6 @@
       return;
     }
     state.phase = "BLOCKED_STILL";
-    $("blocked-evidence").textContent = "תזוזה שנמדדה: " + Math.round(state.movedM) + " מטרים.";
     show("screen-blocked");
   }
 

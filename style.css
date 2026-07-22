@@ -155,14 +155,11 @@ a.btn { text-align: center; text-decoration: none; }
 
 @media (min-width: 560px) { .verdict { font-size: 64px; } }
 
-.evidence { font-family: var(--mono); font-size: 15px; color: var(--muted); margin-bottom: 6px; }
-
 .official-line { font-size: 16px; color: var(--muted); margin-bottom: 22px; }
 
 .stamp {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
   border: 3px solid var(--red);
   border-radius: 14px;
   color: var(--red);
@@ -173,8 +170,6 @@ a.btn { text-align: center; text-decoration: none; }
   margin: 8px 0 18px;
   user-select: none;
 }
-
-.stamp .seal { width: 34px; height: 34px; }
 
 .stamp.green { border-color: var(--blue); color: var(--blue); transform: rotate(-5deg); }
 

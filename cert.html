@@ -30,10 +30,6 @@
 <div class="fvalue mono" id="c-ts"></div>
 </div>
 <div class="field">
-<div class="flabel">תזוזה שנמדדה</div>
-<div class="fvalue mono" id="c-meters"></div>
-</div>
-<div class="field">
 <div class="flabel">סטטוס</div>
 <div class="fvalue" id="c-status"></div>
 </div>
@@ -65,7 +61,6 @@
   var d = new Date(data.ts);
   document.getElementById("c-ts").textContent = isNaN(d) ? "" :
     d.toLocaleDateString("he-IL") + " " + d.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
-  document.getElementById("c-meters").textContent = (data.m || 0) + " מטרים";
   var stamp = document.getElementById("c-stamp");
   stamp.classList.add("green");
   document.getElementById("c-stamp-text").textContent = "אומת";
