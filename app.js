@@ -54,6 +54,7 @@
     var screens = document.querySelectorAll(".screen");
     for (var i = 0; i < screens.length; i++) screens[i].classList.remove("active");
     $(screenId).classList.add("active");
+    document.body.classList.toggle("compact-brand", screenId !== "screen-idle");
     window.scrollTo(0, 0);
   }
 
@@ -107,10 +108,15 @@
     return base + "cert.html?c=" + b64url(JSON.stringify(data));
   }
 
-  function verifiedMessage(certUrl) {
+  // the screen shows only the verdict line; the certificate link travels
+  // inside the WhatsApp message, never printed on screen
+  function verifiedScreenText() {
     return "ה״בדרךייטור״ מאשר: " +
-      Math.round(state.movedM) + " מטרים של תזוזה מאומתת.\n" +
-      "תעודה רשמית: " + certUrl;
+      Math.round(state.movedM) + " מטרים של תזוזה מאומתת.";
+  }
+
+  function verifiedMessage(certUrl) {
+    return verifiedScreenText() + "\n" + "תעודה רשמית: " + certUrl;
   }
 
   function waLink(text) {
@@ -215,7 +221,7 @@
       state.phase = "VERIFIED";
       stopWatching();
       var certUrl = makeCert();
-      $("verified-msg").textContent = verifiedMessage(certUrl);
+      $("verified-msg").textContent = verifiedScreenText();
       $("btn-share-verified").onclick = function () {
         window.open(waLink(verifiedMessage(certUrl)), "_blank");
       };

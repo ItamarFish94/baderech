@@ -40,6 +40,9 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
 
 .band .logo { width: 190px; max-width: 60vw; height: auto; display: block; }
 
+body.compact-brand .band { padding: 12px 18px 2px; }
+body.compact-brand .band .logo { width: 110px; }
+
 .brand-sub { font-size: 13px; color: var(--cream); opacity: 0.85; }
 
 main { flex: 1; width: 100%; max-width: 560px; margin: 0 auto; padding: 22px 18px 40px; }
@@ -87,6 +90,10 @@ main { flex: 1; width: 100%; max-width: 560px; margin: 0 auto; padding: 22px 18p
   border: 1px solid var(--hairline);
   font-weight: 400;
 }
+
+.btn.red { background: var(--red); }
+
+a.btn { text-align: center; text-decoration: none; }
 
 .regulation {
   font-size: 12px;
@@ -182,6 +189,22 @@ main { flex: 1; width: 100%; max-width: 560px; margin: 0 auto; padding: 22px 18p
   overflow-wrap: anywhere;
 }
 
+.ask-line {
+  font-size: 19px;
+  font-weight: 900;
+  line-height: 1.45;
+  margin: 20px 0 12px;
+}
+
+.deal {
+  display: block;
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 0 0 6px;
+}
+
+.deal img { display: block; width: 100%; height: auto; }
+
 .demo-bar {
   position: fixed;
   bottom: 12px;
@@ -221,7 +244,7 @@ body.demo { padding-bottom: 92px; }
   position: relative;
 }
 
-.cert .seal { width: 72px; height: 72px; display: block; margin: 0 auto 8px; }
+.cert-logo { width: 210px; max-width: 70%; height: auto; display: block; margin: 0 auto 10px; }
 
 .cert h1 { font-size: 24px; font-weight: 900; text-align: center; margin-bottom: 4px; }
 
